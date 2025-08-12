@@ -27,8 +27,8 @@ def retrieve_relevant_laws(intake:Dict[str,Any],top_k:int=5)->Dict[str,List[Docu
     if not domain_specific:
         raise ValueError("No domains found in intake for retrieval.")
 
-    vectorstore = load_vectorstore(country)
-    results = {}
+    vectorstore=load_vectorstore(country)
+    results={}
 
     for domain, data in domain_specific.items():
         query=build_domain_query(data)
