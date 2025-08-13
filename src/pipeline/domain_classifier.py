@@ -2,10 +2,11 @@ import os
 import openai
 from typing import List
 from dotenv import load_dotenv
+from openai import OpenAI
 
 load_dotenv()
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 LEGAL_DOMAINS = [
     "criminal_law",
@@ -39,7 +40,7 @@ Example:
 ["criminal_law", "sexual_offense"]
 """
     try:
-        response=openai.ChatCompletion.create(
+        response=client.chat.completions.create(
             model="gpt-4",
             temperature=0.3,
             messages=[
@@ -47,7 +48,7 @@ Example:
                 {"role":"user","content":user_query}
             ]
         )
-        output=response['choices'][0]['message']['content'].strip()
+        output = response.choices[0].message.content.strip()
         domains=eval(output) if output.startswith("[") else ["general"]
         return domains if isinstance(domains, list) else ["general"]
     except Exception as e:

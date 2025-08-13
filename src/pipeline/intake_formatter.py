@@ -15,6 +15,7 @@ def call_llm_to_format_json(prompt:str,domain_outputs:Dict[str,str])->str:
 
     response = client.chat.completions.create(
         model="gpt-4o",
+        response_format={"type": "json_object"},
         messages=[
             {"role":"system","content":prompt},
             {"role":"user","content":combined_input}

@@ -19,23 +19,32 @@ def build_domain_query(domain_data:Dict[str,Any])->str:
     facts=domain_data.get("facts",[])
     return " ".join(facts).strip()
 
-def retrieve_relevant_laws(intake:Dict[str,Any],top_k:int=5)->Dict[str,List[Document]]:
+def retrieve_relevant_laws(intake:Dict[str,Any],top_k:int=5)->Dict[str,List[Dict[str,str]]]:
     country=intake.get("country")
     if not country:
         raise ValueError("Intake missing 'country'. Cannot retrieve laws.")
-    domain_specific=intake.get("domain_specific",{})
+    domain_specific=intake.get("domain_specific") or {}
     if not domain_specific:
-        raise ValueError("No domains found in intake for retrieval.")
-
+        domains=intake.get("domains") or []
+        if domains:
+            gf=intake.get("facts",[]) or []
+            gq=intake.get("legal_questions",[]) or []
+            domain_specific={d:{"facts":list(gf),"legal_questions":list(gq)} for d in domains}
+        else:
+            raise ValueError("No domains found in intake for retrieval.")
     vectorstore=load_vectorstore(country)
     results={}
-
-    for domain, data in domain_specific.items():
+    for domain,data in domain_specific.items():
         query=build_domain_query(data)
         if not query:
-            print(f"Skipping domain '{domain}'. No facts found to query.")
             results[domain]=[]
             continue
-        retrieved_docs=vectorstore.similarity_search(query,k=top_k)
-        results[domain]=retrieved_docs
+        docs=vectorstore.similarity_search(query,k=top_k)
+        results[domain]=[{
+            "section":doc.metadata.get("section",""),
+            "act":doc.metadata.get("act",""),
+            "jurisdiction":doc.metadata.get("jurisdiction",""),
+            "title":doc.metadata.get("title",""),
+            "content":doc.page_content.strip()
+        } for doc in docs]
     return results
