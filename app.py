@@ -111,46 +111,8 @@ if user_msg:
     if st.session_state.phase=="reason":
         with st.spinner("Retrieving laws and generating guidance..."):
             retrieved_laws=retriever.retrieve_relevant_laws(st.session_state.intake)
-
-            for domain,docs in retrieved_laws.items():
-                pretty=[]
-                for d in docs:
-                    try:
-                        # dict-style from new retriever
-                        sec=(d.get("section") or "").strip()
-                        act=(d.get("act") or "").strip()
-                        jur=(d.get("jurisdiction") or "").strip()
-                        ttl=(d.get("title") or "").strip()
-                        txt=(d.get("content") or "").strip()
-                        if sec and act:
-                            pretty.append(f"- **Section {sec}**, *{act}* ({jur}) — {txt}")
-                        elif ttl:
-                            pretty.append(f"- **{ttl}** ({jur}) — {txt}")
-                        else:
-                            pretty.append(f"- {txt}")
-                    except Exception:
-                        # object-style from old retriever
-                        meta=getattr(d,"metadata",{}) or {}
-                        sec=(meta.get("section") or "").strip()
-                        act=(meta.get("act") or "").strip()
-                        jur=(meta.get("jurisdiction") or "").strip()
-                        ttl=(meta.get("title") or "").strip()
-                        txt=(getattr(d,"page_content","") or "").strip()
-                        if sec and act:
-                            pretty.append(f"- **Section {sec}**, *{act}* ({jur}) — {txt}")
-                        elif ttl:
-                            pretty.append(f"- **{ttl}** ({jur}) — {txt}")
-                        else:
-                            pretty.append(f"- {txt}")
-                if pretty:
-                    say("assistant",f"📜 **Relevant {domain.replace('_',' ').title()} Law Sections:**\n"+"\n".join(pretty))
-                else:
-                    say("assistant",f"📜 No relevant {domain.replace('_',' ').title()} laws found.")
-
             final_answer=reasoner.reason_on_case(st.session_state.intake,retrieved_laws)
-
         for domain,advice in final_answer.items():
             say("assistant",f"### {domain.replace('_',' ').title()}\n\n{advice}")
-
         st.session_state.phase="done"
         say("assistant","If you’d like, share more details or ask follow-up questions.")
