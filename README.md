@@ -167,10 +167,6 @@ Keep `langchain` itself on a current version as in `requirements-modern.txt`.
 ## 🤝 Contributing
 Pull requests and issues are welcome. Open a discussion if you want to add a new country or domain taxonomy.
 
----
-
-## 📄 License
-Choose a license for this repository such as MIT and add a `LICENSE` file in the repo root.
 
 ---
 
