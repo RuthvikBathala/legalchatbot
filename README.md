@@ -13,29 +13,6 @@ LegalChatbot is a Streamlit app and modular pipeline that helps users describe a
 - **Intake & follow-ups**: asks clarifying questions to fill missing fields before reasoning.
 - **Reasoner**: composes a final answer grounded in retrieved passages.
 - **Modular design**: each stage lives under `src/pipeline/` for easy iteration and testing.
-
----
-
-## 🗂️ Project structure
-legalchatbot/
-├─ app.py
-├─ .env.example
-├─ requirements.txt # choose legacy or modern (see below)
-├─ data/ # <country> folders with PDFs or TXT
-├─ embeddings/ # FAISS indexes saved per country
-├─ prompt_temp/ # prompt templates
-└─ src/
-└─ pipeline/
-├─ encoder.py # build embeddings per country or all
-├─ domain_classifier.py # classify into legal domains (multi-label)
-├─ intake_parser.py # parse user intake into structured fields
-├─ intake_formatter.py # format intake for prompts and reasoning
-├─ missing_info_handler.py # detect gaps and ask follow-ups
-├─ retriever.py # FAISS retrieval helpers
-├─ reasoner.py # final LLM reasoning over retrieved chunks
-└─ merge_intake_updates.py # merge user updates back into intake JSON
-
-
 ---
 
 ## 🚀 Quick start
